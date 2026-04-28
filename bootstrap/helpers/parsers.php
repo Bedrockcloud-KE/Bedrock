@@ -429,7 +429,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
         // convert environment variables to one format
         $environment = convertToKeyValueCollection($environment);
 
-        // Add Coolify defined environments
+        // Add Bedrock defined environments
         $allEnvironments = $resource->environment_variables()->get(['key', 'value']);
 
         $allEnvironments = $allEnvironments->mapWithKeys(function ($item) {
@@ -509,7 +509,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
 
         $allMagicEnvironments = $allMagicEnvironments->merge($magicEnvironments);
         if ($magicEnvironments->count() > 0) {
-            // Generate Coolify environment variables
+            // Generate Bedrock environment variables
             foreach ($magicEnvironments as $key => $value) {
                 $key = str($key);
                 $value = replaceVariables($value);
@@ -678,7 +678,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
         $environment = $environment->merge($buildArgs);
 
         $environment = convertToKeyValueCollection($environment);
-        $coolifyEnvironments = collect([]);
+        $bedrockEnvironments = collect([]);
 
         $isDatabase = isDatabaseImage($image, $service);
         $volumesParsed = collect([]);
@@ -812,9 +812,9 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
                         );
                         if (isDev()) {
                             if ((int) $resource->compose_parsing_version >= 4) {
-                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/applications/'.$uuid);
+                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/applications/'.$uuid);
                             } else {
-                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/applications/'.$uuid);
+                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/applications/'.$uuid);
                             }
                         }
                         $volume = "$source:$target";
@@ -1146,17 +1146,17 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
             $branch = "pull/{$pullRequestId}/head";
         }
         if ($originalResource->environment_variables->where('key', 'COOLIFY_BRANCH')->isEmpty()) {
-            $coolifyEnvironments->put('COOLIFY_BRANCH', "\"{$branch}\"");
+            $bedrockEnvironments->put('COOLIFY_BRANCH', "\"{$branch}\"");
         }
 
         // Add COOLIFY_RESOURCE_UUID to environment
         if ($resource->environment_variables->where('key', 'COOLIFY_RESOURCE_UUID')->isEmpty()) {
-            $coolifyEnvironments->put('COOLIFY_RESOURCE_UUID', "{$resource->uuid}");
+            $bedrockEnvironments->put('COOLIFY_RESOURCE_UUID', "{$resource->uuid}");
         }
 
         // Add COOLIFY_CONTAINER_NAME to environment
         if ($resource->environment_variables->where('key', 'COOLIFY_CONTAINER_NAME')->isEmpty()) {
-            $coolifyEnvironments->put('COOLIFY_CONTAINER_NAME', "{$containerName}");
+            $bedrockEnvironments->put('COOLIFY_CONTAINER_NAME', "{$containerName}");
         }
 
         if ($isPullRequest) {
@@ -1180,18 +1180,18 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
 
                 if (filled($parsedDomain)) {
                     $parsedDomain = str($parsedDomain)->explode(',')->first();
-                    $coolifyUrl = Url::fromString($parsedDomain);
-                    $coolifyScheme = $coolifyUrl->getScheme();
-                    $coolifyFqdn = $coolifyUrl->getHost();
-                    $coolifyUrl = $coolifyUrl->withScheme($coolifyScheme)->withHost($coolifyFqdn)->withPort(null);
-                    $coolifyEnvironments->put('SERVICE_URL_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'), $coolifyUrl->__toString());
-                    $coolifyEnvironments->put('SERVICE_FQDN_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'), $coolifyFqdn);
+                    $bedrockUrl = Url::fromString($parsedDomain);
+                    $bedrockScheme = $bedrockUrl->getScheme();
+                    $bedrockFqdn = $bedrockUrl->getHost();
+                    $bedrockUrl = $bedrockUrl->withScheme($bedrockScheme)->withHost($bedrockFqdn)->withPort(null);
+                    $bedrockEnvironments->put('SERVICE_URL_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'), $bedrockUrl->__toString());
+                    $bedrockEnvironments->put('SERVICE_FQDN_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'), $bedrockFqdn);
                     $resource->environment_variables()->updateOrCreate([
                         'resourceable_type' => Application::class,
                         'resourceable_id' => $resource->id,
                         'key' => 'SERVICE_URL_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'),
                     ], [
-                        'value' => $coolifyUrl->__toString(),
+                        'value' => $bedrockUrl->__toString(),
                         'is_preview' => false,
                     ]);
                     $resource->environment_variables()->updateOrCreate([
@@ -1199,7 +1199,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
                         'resourceable_id' => $resource->id,
                         'key' => 'SERVICE_FQDN_'.str($forServiceName)->upper()->replace('-', '_')->replace('.', '_'),
                     ], [
-                        'value' => $coolifyFqdn,
+                        'value' => $bedrockFqdn,
                         'is_preview' => false,
                     ]);
                 } else {
@@ -1269,14 +1269,14 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
             $fqdnsWithoutPort = $fqdns->map(function ($fqdn) {
                 return str($fqdn)->after('://')->before(':')->prepend(str($fqdn)->before('://')->append('://'));
             });
-            $coolifyEnvironments->put('COOLIFY_URL', $fqdnsWithoutPort->implode(','));
+            $bedrockEnvironments->put('COOLIFY_URL', $fqdnsWithoutPort->implode(','));
 
             $urls = $fqdns->map(function ($fqdn) {
                 return str($fqdn)->replace('http://', '')->replace('https://', '')->before(':');
             });
-            $coolifyEnvironments->put('COOLIFY_FQDN', $urls->implode(','));
+            $bedrockEnvironments->put('COOLIFY_FQDN', $urls->implode(','));
         }
-        add_coolify_default_environment_variables($resource, $coolifyEnvironments, $resource->environment_variables);
+        add_bedrock_default_environment_variables($resource, $bedrockEnvironments, $resource->environment_variables);
         if ($environment->count() > 0) {
             $environment = $environment->filter(function ($value, $key) {
                 return ! str($key)->startsWith('SERVICE_FQDN_');
@@ -1408,8 +1408,8 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
         if ($volumesParsed->count() > 0) {
             $payload['volumes'] = $volumesParsed;
         }
-        if ($environment->count() > 0 || $coolifyEnvironments->count() > 0) {
-            $payload['environment'] = $environment->merge($coolifyEnvironments)->merge($serviceNameEnvironments);
+        if ($environment->count() > 0 || $bedrockEnvironments->count() > 0) {
+            $payload['environment'] = $environment->merge($bedrockEnvironments)->merge($serviceNameEnvironments);
         }
         if ($logging) {
             $payload['logging'] = $logging;
@@ -1417,7 +1417,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
         if ($depends_on->count() > 0) {
             $payload['depends_on'] = $depends_on;
         }
-        // Auto-inject .env file so Coolify environment variables are available inside containers
+        // Auto-inject .env file so Bedrock environment variables are available inside containers
         // This makes Applications behave consistently with manual .env file usage
         $existingEnvFiles = data_get($service, 'env_file');
         $envFiles = collect(is_null($existingEnvFiles) ? [] : (is_array($existingEnvFiles) ? $existingEnvFiles : [$existingEnvFiles]))
@@ -1471,7 +1471,7 @@ function applicationParser(Application $resource, int $pull_request_id = 0, ?int
 
     // Update docker_compose_raw to remove content: from volumes only
     // This keeps the original user input clean while preventing content reapplication
-    // Parse the original compose again to create a clean version without Coolify additions
+    // Parse the original compose again to create a clean version without Bedrock additions
     try {
         $originalYaml = Yaml::parse($originalCompose);
         // Remove content, isDirectory, and is_directory from all volume definitions
@@ -1704,7 +1704,7 @@ function serviceParser(Service $resource): Collection
         // convert environment variables to one format
         $environment = convertToKeyValueCollection($environment);
 
-        // Add Coolify defined environments
+        // Add Bedrock defined environments
         $allEnvironments = $resource->environment_variables()->get(['key', 'value']);
 
         $allEnvironments = $allEnvironments->mapWithKeys(function ($item) {
@@ -1805,7 +1805,7 @@ function serviceParser(Service $resource): Collection
                 // Only save fqdn to ServiceApplication, not ServiceDatabase
                 if ($isServiceApplication && is_null($savedService->fqdn)) {
                     // Save URL (with scheme) to database, not FQDN
-                    if ((int) $resource->compose_parsing_version >= 5 && version_compare(config('constants.coolify.version'), '4.0.0-beta.420.7', '>=')) {
+                    if ((int) $resource->compose_parsing_version >= 5 && version_compare(config('constants.bedrock.version'), '4.0.0-beta.420.7', '>=')) {
                         $savedService->fqdn = $urlWithPort;
                     } else {
                         $savedService->fqdn = $urlWithPort;
@@ -2010,7 +2010,7 @@ function serviceParser(Service $resource): Collection
         $environment = $environment->merge($buildArgs);
 
         $environment = convertToKeyValueCollection($environment);
-        $coolifyEnvironments = collect([]);
+        $bedrockEnvironments = collect([]);
 
         // Check for manually migrated services first (respects user's conversion choice)
         $migratedApp = ServiceApplication::where('name', $serviceName)
@@ -2193,9 +2193,9 @@ function serviceParser(Service $resource): Collection
                         );
                         if (isDev()) {
                             if ((int) $resource->compose_parsing_version >= 4) {
-                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/services/'.$uuid);
+                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/services/'.$uuid);
                             } else {
-                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/applications/'.$uuid);
+                                $source = $source->replace($mainDirectory, '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/applications/'.$uuid);
                             }
                         }
                         $volume = "$source:$target";
@@ -2516,12 +2516,12 @@ function serviceParser(Service $resource): Collection
 
         // Add COOLIFY_RESOURCE_UUID to environment
         if ($resource->environment_variables->where('key', 'COOLIFY_RESOURCE_UUID')->isEmpty()) {
-            $coolifyEnvironments->put('COOLIFY_RESOURCE_UUID', "{$resource->uuid}");
+            $bedrockEnvironments->put('COOLIFY_RESOURCE_UUID', "{$resource->uuid}");
         }
 
         // Add COOLIFY_CONTAINER_NAME to environment
         if ($resource->environment_variables->where('key', 'COOLIFY_CONTAINER_NAME')->isEmpty()) {
-            $coolifyEnvironments->put('COOLIFY_CONTAINER_NAME', "{$containerName}");
+            $bedrockEnvironments->put('COOLIFY_CONTAINER_NAME', "{$containerName}");
         }
 
         if ($savedService->serviceType()) {
@@ -2547,13 +2547,13 @@ function serviceParser(Service $resource): Collection
             $fqdnsWithoutPort = $fqdns->map(function ($fqdn) {
                 return str($fqdn)->replace('http://', '')->replace('https://', '')->before(':');
             });
-            $coolifyEnvironments->put('COOLIFY_FQDN', $fqdnsWithoutPort->implode(','));
+            $bedrockEnvironments->put('COOLIFY_FQDN', $fqdnsWithoutPort->implode(','));
             $urls = $fqdns->map(function ($fqdn): Stringable {
                 return str($fqdn)->after('://')->before(':')->prepend(str($fqdn)->before('://')->append('://'));
             });
-            $coolifyEnvironments->put('COOLIFY_URL', $urls->implode(','));
+            $bedrockEnvironments->put('COOLIFY_URL', $urls->implode(','));
         }
-        add_coolify_default_environment_variables($resource, $coolifyEnvironments, $resource->environment_variables);
+        add_bedrock_default_environment_variables($resource, $bedrockEnvironments, $resource->environment_variables);
         if ($environment->count() > 0) {
             $environment = $environment->filter(function ($value, $key) {
                 return ! str($key)->startsWith('SERVICE_FQDN_');
@@ -2682,8 +2682,8 @@ function serviceParser(Service $resource): Collection
         if ($volumesParsed->count() > 0) {
             $payload['volumes'] = $volumesParsed;
         }
-        if ($environment->count() > 0 || $coolifyEnvironments->count() > 0) {
-            $payload['environment'] = $environment->merge($coolifyEnvironments)->merge($serviceNameEnvironments);
+        if ($environment->count() > 0 || $bedrockEnvironments->count() > 0) {
+            $payload['environment'] = $environment->merge($bedrockEnvironments)->merge($serviceNameEnvironments);
         }
         if ($logging) {
             $payload['logging'] = $logging;
@@ -2691,7 +2691,7 @@ function serviceParser(Service $resource): Collection
         if ($depends_on->count() > 0) {
             $payload['depends_on'] = $depends_on;
         }
-        // Auto-inject .env file so Coolify environment variables are available inside containers
+        // Auto-inject .env file so Bedrock environment variables are available inside containers
         // This makes Services behave consistently with Applications
         $existingEnvFiles = data_get($service, 'env_file');
         $envFiles = collect(is_null($existingEnvFiles) ? [] : (is_array($existingEnvFiles) ? $existingEnvFiles : [$existingEnvFiles]))
@@ -2728,7 +2728,7 @@ function serviceParser(Service $resource): Collection
 
     // Update docker_compose_raw to remove content: from volumes only
     // This keeps the original user input clean while preventing content reapplication
-    // Parse the original compose again to create a clean version without Coolify additions
+    // Parse the original compose again to create a clean version without Bedrock additions
     try {
         $originalYaml = Yaml::parse($originalCompose);
         // Remove content, isDirectory, and is_directory from all volume definitions

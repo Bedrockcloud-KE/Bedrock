@@ -168,7 +168,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
 
     private ?string $branch = null;
 
-    private ?string $coolify_variables = null;
+    private ?string $bedrock_variables = null;
 
     private bool $preserveRepository = false;
 
@@ -305,7 +305,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     $allContainers = collect($allContainers)->sort()->values();
                     foreach ($allContainers as $container) {
                         $containerName = data_get($container, 'Name');
-                        if ($containerName === 'coolify-proxy') {
+                        if ($containerName === 'bedrock-proxy') {
                             continue;
                         }
                         if (preg_match('/-(\d{12})/', $containerName)) {
@@ -419,7 +419,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                 return;
             }
 
-            // Check buildx availability (always installed by Coolify on Docker 24.0+)
+            // Check buildx availability (always installed by Bedrock on Docker 24.0+)
             $buildxAvailable = instant_remote_process(
                 ["docker buildx version >/dev/null 2>&1 && echo 'available' || echo 'not-available'"],
                 $serverToCheck
@@ -737,7 +737,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                 throw $e;
             }
         } else {
-            $command = "{$this->coolify_variables} docker compose";
+            $command = "{$this->bedrock_variables} docker compose";
             // Prepend DOCKER_BUILDKIT=1 if BuildKit is supported
             if ($this->dockerBuildkitSupported) {
                 $command = "DOCKER_BUILDKIT=1 {$command}";
@@ -779,7 +779,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                 'hidden' => true,
                 'ignore_errors' => true,
             ], [
-                "docker network connect {$networkId} coolify-proxy >/dev/null 2>&1 || true",
+                "docker network connect {$networkId} bedrock-proxy >/dev/null 2>&1 || true",
                 'hidden' => true,
                 'ignore_errors' => true,
             ]);
@@ -813,7 +813,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                 $this->write_deployment_configurations();
                 $this->docker_compose_location = '/docker-compose.yaml';
 
-                $command = "{$this->coolify_variables} docker compose";
+                $command = "{$this->bedrock_variables} docker compose";
                 // Always use .env file
                 $command .= " --env-file {$server_workdir}/.env";
                 $command .= " --project-directory {$server_workdir} -f {$server_workdir}{$this->docker_compose_location} up -d";
@@ -843,7 +843,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     );
                 }
             } else {
-                $command = "{$this->coolify_variables} docker compose";
+                $command = "{$this->bedrock_variables} docker compose";
                 if ($this->preserveRepository) {
                     // Always use .env file
                     $command .= " --env-file {$server_workdir}/.env";
@@ -1232,8 +1232,8 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             });
         }
         $ports = $this->application->main_port();
-        $coolify_envs = $this->generate_coolify_env_variables();
-        $coolify_envs->each(function ($item, $key) use ($envs) {
+        $bedrock_envs = $this->generate_bedrock_env_variables();
+        $bedrock_envs->each(function ($item, $key) use ($envs) {
             $envs->push($key.'='.$item);
         });
         if ($this->pull_request_id === 0) {
@@ -1246,12 +1246,12 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     $parsedDomain = data_get($domain, 'domain');
                     if (filled($parsedDomain)) {
                         $parsedDomain = str($parsedDomain)->explode(',')->first();
-                        $coolifyUrl = Url::fromString($parsedDomain);
-                        $coolifyScheme = $coolifyUrl->getScheme();
-                        $coolifyFqdn = $coolifyUrl->getHost();
-                        $coolifyUrl = $coolifyUrl->withScheme($coolifyScheme)->withHost($coolifyFqdn)->withPort(null);
-                        $envs->push('SERVICE_URL_'.str($forServiceName)->upper().'='.$coolifyUrl->__toString());
-                        $envs->push('SERVICE_FQDN_'.str($forServiceName)->upper().'='.$coolifyFqdn);
+                        $bedrockUrl = Url::fromString($parsedDomain);
+                        $bedrockScheme = $bedrockUrl->getScheme();
+                        $bedrockFqdn = $bedrockUrl->getHost();
+                        $bedrockUrl = $bedrockUrl->withScheme($bedrockScheme)->withHost($bedrockFqdn)->withPort(null);
+                        $envs->push('SERVICE_URL_'.str($forServiceName)->upper().'='.$bedrockUrl->__toString());
+                        $envs->push('SERVICE_FQDN_'.str($forServiceName)->upper().'='.$bedrockFqdn);
                     }
                 }
 
@@ -1316,12 +1316,12 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     $parsedDomain = data_get($domain, 'domain');
                     if (filled($parsedDomain)) {
                         $parsedDomain = str($parsedDomain)->explode(',')->first();
-                        $coolifyUrl = Url::fromString($parsedDomain);
-                        $coolifyScheme = $coolifyUrl->getScheme();
-                        $coolifyFqdn = $coolifyUrl->getHost();
-                        $coolifyUrl = $coolifyUrl->withScheme($coolifyScheme)->withHost($coolifyFqdn)->withPort(null);
-                        $envs->push('SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper().'='.$coolifyUrl->__toString());
-                        $envs->push('SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper().'='.$coolifyFqdn);
+                        $bedrockUrl = Url::fromString($parsedDomain);
+                        $bedrockScheme = $bedrockUrl->getScheme();
+                        $bedrockFqdn = $bedrockUrl->getHost();
+                        $bedrockUrl = $bedrockUrl->withScheme($bedrockScheme)->withHost($bedrockFqdn)->withPort(null);
+                        $envs->push('SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper().'='.$bedrockUrl->__toString());
+                        $envs->push('SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper().'='.$bedrockFqdn);
                     }
                 }
 
@@ -1531,8 +1531,8 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         }
 
         // 2. Add COOLIFY variables (can override nixpacks, but shouldn't happen in practice)
-        $coolify_envs = $this->generate_coolify_env_variables(forBuildTime: true);
-        foreach ($coolify_envs as $key => $item) {
+        $bedrock_envs = $this->generate_bedrock_env_variables(forBuildTime: true);
+        foreach ($bedrock_envs as $key => $item) {
             $envs_dict[$key] = escapeBashEnvValue($item);
         }
 
@@ -1556,12 +1556,12 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     $parsedDomain = data_get($domain, 'domain');
                     if (filled($parsedDomain)) {
                         $parsedDomain = str($parsedDomain)->explode(',')->first();
-                        $coolifyUrl = Url::fromString($parsedDomain);
-                        $coolifyScheme = $coolifyUrl->getScheme();
-                        $coolifyFqdn = $coolifyUrl->getHost();
-                        $coolifyUrl = $coolifyUrl->withScheme($coolifyScheme)->withHost($coolifyFqdn)->withPort(null);
-                        $envs_dict['SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($coolifyUrl->__toString());
-                        $envs_dict['SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($coolifyFqdn);
+                        $bedrockUrl = Url::fromString($parsedDomain);
+                        $bedrockScheme = $bedrockUrl->getScheme();
+                        $bedrockFqdn = $bedrockUrl->getHost();
+                        $bedrockUrl = $bedrockUrl->withScheme($bedrockScheme)->withHost($bedrockFqdn)->withPort(null);
+                        $envs_dict['SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($bedrockUrl->__toString());
+                        $envs_dict['SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($bedrockFqdn);
                     }
                 }
             } else {
@@ -1578,12 +1578,12 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     $parsedDomain = data_get($domain, 'domain');
                     if (filled($parsedDomain)) {
                         $parsedDomain = str($parsedDomain)->explode(',')->first();
-                        $coolifyUrl = Url::fromString($parsedDomain);
-                        $coolifyScheme = $coolifyUrl->getScheme();
-                        $coolifyFqdn = $coolifyUrl->getHost();
-                        $coolifyUrl = $coolifyUrl->withScheme($coolifyScheme)->withHost($coolifyFqdn)->withPort(null);
-                        $envs_dict['SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($coolifyUrl->__toString());
-                        $envs_dict['SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($coolifyFqdn);
+                        $bedrockUrl = Url::fromString($parsedDomain);
+                        $bedrockScheme = $bedrockUrl->getScheme();
+                        $bedrockFqdn = $bedrockUrl->getHost();
+                        $bedrockUrl = $bedrockUrl->withScheme($bedrockScheme)->withHost($bedrockFqdn)->withPort(null);
+                        $envs_dict['SERVICE_URL_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($bedrockUrl->__toString());
+                        $envs_dict['SERVICE_FQDN_'.str($forServiceName)->replace('-', '_')->replace('.', '_')->upper()] = escapeBashEnvValue($bedrockFqdn);
                     }
                 }
             }
@@ -2024,7 +2024,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
     private function prepare_builder_image(bool $firstTry = true)
     {
         $this->checkForCancellation();
-        $helperImage = config('constants.coolify.helper_image');
+        $helperImage = config('constants.bedrock.helper_image');
         $helperImage = "{$helperImage}:".getHelperVersion();
         // Get user home directory
         $this->serverUserHomeDir = instant_remote_process(['echo $HOME'], $this->server);
@@ -2121,13 +2121,13 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         }
     }
 
-    private function set_coolify_variables()
+    private function set_bedrock_variables()
     {
-        $this->coolify_variables = '';
+        $this->bedrock_variables = '';
 
         // Only include SOURCE_COMMIT in build context if enabled in settings
         if ($this->application->settings->include_source_commit_in_build) {
-            $this->coolify_variables .= "SOURCE_COMMIT={$this->commit} ";
+            $this->bedrock_variables .= "SOURCE_COMMIT={$this->commit} ";
         }
         if ($this->pull_request_id === 0) {
             $fqdn = $this->application->fqdn;
@@ -2139,17 +2139,17 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             $fqdn = $url->getHost();
             $url = $url->withHost($fqdn)->withPort(null)->__toString();
             if ((int) $this->application->compose_parsing_version >= 3) {
-                $this->coolify_variables .= "COOLIFY_URL={$url} ";
-                $this->coolify_variables .= "COOLIFY_FQDN={$fqdn} ";
+                $this->bedrock_variables .= "COOLIFY_URL={$url} ";
+                $this->bedrock_variables .= "COOLIFY_FQDN={$fqdn} ";
             } else {
-                $this->coolify_variables .= "COOLIFY_URL={$fqdn} ";
-                $this->coolify_variables .= "COOLIFY_FQDN={$url} ";
+                $this->bedrock_variables .= "COOLIFY_URL={$fqdn} ";
+                $this->bedrock_variables .= "COOLIFY_FQDN={$url} ";
             }
         }
         if (isset($this->application->git_branch)) {
-            $this->coolify_variables .= "COOLIFY_BRANCH={$this->application->git_branch} ";
+            $this->bedrock_variables .= "COOLIFY_BRANCH={$this->application->git_branch} ";
         }
-        $this->coolify_variables .= "COOLIFY_RESOURCE_UUID={$this->application->uuid} ";
+        $this->bedrock_variables .= "COOLIFY_RESOURCE_UUID={$this->application->uuid} ";
     }
 
     private function check_git_if_build_needed()
@@ -2234,7 +2234,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                 }
             }
         }
-        $this->set_coolify_variables();
+        $this->set_bedrock_variables();
 
         // Restart helper container with actual SOURCE_COMMIT value
         if ($this->application->settings->use_build_secrets && $this->commit !== 'HEAD') {
@@ -2411,8 +2411,8 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         }
 
         // Add COOLIFY_* environment variables to Nixpacks build context
-        $coolify_envs = $this->generate_coolify_env_variables(forBuildTime: true);
-        $coolify_envs->each(function ($value, $key) {
+        $bedrock_envs = $this->generate_bedrock_env_variables(forBuildTime: true);
+        $bedrock_envs->each(function ($value, $key) {
             // Only add environment variables with non-null and non-empty values
             if (! is_null($value) && $value !== '') {
                 $this->env_nixpacks_args->push('--env '.escapeShellValue("{$key}={$value}"));
@@ -2422,9 +2422,9 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         $this->env_nixpacks_args = $this->env_nixpacks_args->implode(' ');
     }
 
-    private function generate_coolify_env_variables(bool $forBuildTime = false): Collection
+    private function generate_bedrock_env_variables(bool $forBuildTime = false): Collection
     {
-        $coolify_envs = collect([]);
+        $bedrock_envs = collect([]);
         $local_branch = $this->branch;
         if ($this->pull_request_id !== 0) {
             // Only add SOURCE_COMMIT for runtime OR when explicitly enabled for build-time
@@ -2432,43 +2432,43 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             if (! $forBuildTime || $this->application->settings->include_source_commit_in_build) {
                 if ($this->application->environment_variables_preview->where('key', 'SOURCE_COMMIT')->isEmpty()) {
                     if (! is_null($this->commit)) {
-                        $coolify_envs->put('SOURCE_COMMIT', $this->commit);
+                        $bedrock_envs->put('SOURCE_COMMIT', $this->commit);
                     } else {
-                        $coolify_envs->put('SOURCE_COMMIT', 'unknown');
+                        $bedrock_envs->put('SOURCE_COMMIT', 'unknown');
                     }
                 }
             }
             if ($this->application->environment_variables_preview->where('key', 'COOLIFY_FQDN')->isEmpty()) {
                 if ((int) $this->application->compose_parsing_version >= 3) {
-                    $coolify_envs->put('COOLIFY_URL', $this->preview->fqdn);
+                    $bedrock_envs->put('COOLIFY_URL', $this->preview->fqdn);
                 } else {
-                    $coolify_envs->put('COOLIFY_FQDN', $this->preview->fqdn);
+                    $bedrock_envs->put('COOLIFY_FQDN', $this->preview->fqdn);
                 }
             }
             if ($this->application->environment_variables_preview->where('key', 'COOLIFY_URL')->isEmpty()) {
                 $url = str($this->preview->fqdn)->replace('http://', '')->replace('https://', '');
                 if ((int) $this->application->compose_parsing_version >= 3) {
-                    $coolify_envs->put('COOLIFY_FQDN', $url);
+                    $bedrock_envs->put('COOLIFY_FQDN', $url);
                 } else {
-                    $coolify_envs->put('COOLIFY_URL', $url);
+                    $bedrock_envs->put('COOLIFY_URL', $url);
                 }
             }
             if ($this->application->build_pack !== 'dockercompose' || $this->application->compose_parsing_version === '1' || $this->application->compose_parsing_version === '2') {
                 if ($this->application->environment_variables_preview->where('key', 'COOLIFY_BRANCH')->isEmpty()) {
-                    $coolify_envs->put('COOLIFY_BRANCH', $local_branch);
+                    $bedrock_envs->put('COOLIFY_BRANCH', $local_branch);
                 }
                 if ($this->application->environment_variables_preview->where('key', 'COOLIFY_RESOURCE_UUID')->isEmpty()) {
-                    $coolify_envs->put('COOLIFY_RESOURCE_UUID', $this->application->uuid);
+                    $bedrock_envs->put('COOLIFY_RESOURCE_UUID', $this->application->uuid);
                 }
                 // Only add COOLIFY_CONTAINER_NAME for runtime (not build-time) - it changes every deployment and breaks Docker cache
                 if (! $forBuildTime) {
                     if ($this->application->environment_variables_preview->where('key', 'COOLIFY_CONTAINER_NAME')->isEmpty()) {
-                        $coolify_envs->put('COOLIFY_CONTAINER_NAME', $this->container_name);
+                        $bedrock_envs->put('COOLIFY_CONTAINER_NAME', $this->container_name);
                     }
                 }
             }
 
-            add_coolify_default_environment_variables($this->application, $coolify_envs, $this->application->environment_variables_preview);
+            add_bedrock_default_environment_variables($this->application, $bedrock_envs, $this->application->environment_variables_preview);
 
         } else {
             // Only add SOURCE_COMMIT for runtime OR when explicitly enabled for build-time
@@ -2476,47 +2476,47 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             if (! $forBuildTime || $this->application->settings->include_source_commit_in_build) {
                 if ($this->application->environment_variables->where('key', 'SOURCE_COMMIT')->isEmpty()) {
                     if (! is_null($this->commit)) {
-                        $coolify_envs->put('SOURCE_COMMIT', $this->commit);
+                        $bedrock_envs->put('SOURCE_COMMIT', $this->commit);
                     } else {
-                        $coolify_envs->put('SOURCE_COMMIT', 'unknown');
+                        $bedrock_envs->put('SOURCE_COMMIT', 'unknown');
                     }
                 }
             }
             if ($this->application->environment_variables->where('key', 'COOLIFY_FQDN')->isEmpty()) {
                 if ((int) $this->application->compose_parsing_version >= 3) {
-                    $coolify_envs->put('COOLIFY_URL', $this->application->fqdn);
+                    $bedrock_envs->put('COOLIFY_URL', $this->application->fqdn);
                 } else {
-                    $coolify_envs->put('COOLIFY_FQDN', $this->application->fqdn);
+                    $bedrock_envs->put('COOLIFY_FQDN', $this->application->fqdn);
                 }
             }
             if ($this->application->environment_variables->where('key', 'COOLIFY_URL')->isEmpty()) {
                 $url = str($this->application->fqdn)->replace('http://', '')->replace('https://', '');
                 if ((int) $this->application->compose_parsing_version >= 3) {
-                    $coolify_envs->put('COOLIFY_FQDN', $url);
+                    $bedrock_envs->put('COOLIFY_FQDN', $url);
                 } else {
-                    $coolify_envs->put('COOLIFY_URL', $url);
+                    $bedrock_envs->put('COOLIFY_URL', $url);
                 }
             }
             if ($this->application->build_pack !== 'dockercompose' || $this->application->compose_parsing_version === '1' || $this->application->compose_parsing_version === '2') {
                 if ($this->application->environment_variables->where('key', 'COOLIFY_BRANCH')->isEmpty()) {
-                    $coolify_envs->put('COOLIFY_BRANCH', $local_branch);
+                    $bedrock_envs->put('COOLIFY_BRANCH', $local_branch);
                 }
                 if ($this->application->environment_variables->where('key', 'COOLIFY_RESOURCE_UUID')->isEmpty()) {
-                    $coolify_envs->put('COOLIFY_RESOURCE_UUID', $this->application->uuid);
+                    $bedrock_envs->put('COOLIFY_RESOURCE_UUID', $this->application->uuid);
                 }
                 // Only add COOLIFY_CONTAINER_NAME for runtime (not build-time) - it changes every deployment and breaks Docker cache
                 if (! $forBuildTime) {
                     if ($this->application->environment_variables->where('key', 'COOLIFY_CONTAINER_NAME')->isEmpty()) {
-                        $coolify_envs->put('COOLIFY_CONTAINER_NAME', $this->container_name);
+                        $bedrock_envs->put('COOLIFY_CONTAINER_NAME', $this->container_name);
                     }
                 }
             }
 
-            add_coolify_default_environment_variables($this->application, $coolify_envs, $this->application->environment_variables);
+            add_bedrock_default_environment_variables($this->application, $bedrock_envs, $this->application->environment_variables);
 
         }
 
-        return $coolify_envs;
+        return $bedrock_envs;
     }
 
     private function generate_env_variables()
@@ -2528,8 +2528,8 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             $this->env_args->put('SOURCE_COMMIT', $this->commit);
         }
 
-        $coolify_envs = $this->generate_coolify_env_variables(forBuildTime: true);
-        $coolify_envs->each(function ($value, $key) {
+        $bedrock_envs = $this->generate_bedrock_env_variables(forBuildTime: true);
+        $bedrock_envs->each(function ($value, $key) {
             if (! is_null($value) && $value !== '') {
                 $this->env_args->put($key, $value);
             }
@@ -2575,7 +2575,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             $this->application->parseContainerLabels();
             $labels = collect(preg_split("/\r\n|\n|\r/", base64_decode($this->application->custom_labels)));
             $labels = $labels->filter(function ($value, $key) {
-                return ! Str::startsWith($value, 'coolify.');
+                return ! Str::startsWith($value, 'bedrock.');
             });
             $this->application->custom_labels = base64_encode($labels->implode("\n"));
             $this->application->save();
@@ -2642,7 +2642,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         // Always use .env file
         $docker_compose['services'][$this->container_name]['env_file'] = ['.env'];
 
-        // Only add Coolify healthcheck if no custom HEALTHCHECK found in Dockerfile
+        // Only add Bedrock healthcheck if no custom HEALTHCHECK found in Dockerfile
         // If custom_healthcheck_found is true, the Dockerfile's HEALTHCHECK will be used
         // If healthcheck is disabled, no healthcheck will be added
         if (! $this->application->custom_healthcheck_found && ! $this->application->isHealthcheckDisabled()) {
@@ -2925,7 +2925,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
         }
         $dockerfile = base64_encode("FROM {$this->application->static_image}
         WORKDIR /usr/share/nginx/html/
-        LABEL coolify.deploymentId={$this->deployment_uuid}
+        LABEL bedrock.deploymentId={$this->deployment_uuid}
         COPY . .
         RUN rm -f /usr/share/nginx/html/nginx.conf
         RUN rm -f /usr/share/nginx/html/Dockerfile
@@ -2984,11 +2984,11 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
 
     private function build_image()
     {
-        // Add Coolify related variables to the build args/secrets
+        // Add Bedrock related variables to the build args/secrets
         if (! $this->dockerSecretsSupported) {
             // Traditional build args approach - generate COOLIFY_ variables locally
-            $coolify_envs = $this->generate_coolify_env_variables(forBuildTime: true);
-            $coolify_envs->each(function ($value, $key) {
+            $bedrock_envs = $this->generate_bedrock_env_variables(forBuildTime: true);
+            $bedrock_envs->each(function ($value, $key) {
                 $this->build_args->push("--build-arg '{$key}'");
             });
         }
@@ -3120,7 +3120,7 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
             $publishDir = $publishDir ? "/{$publishDir}" : '';
             $dockerfile = base64_encode("FROM {$this->application->static_image}
 WORKDIR /usr/share/nginx/html/
-LABEL coolify.deploymentId={$this->deployment_uuid}
+LABEL bedrock.deploymentId={$this->deployment_uuid}
 COPY --from=$this->build_image_name /app{$publishDir} .
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
             if (str($this->application->custom_nginx_configuration)->isNotEmpty()) {
@@ -3347,7 +3347,7 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
             } else {
                 if ($this->application->dockerfile || $this->application->build_pack === 'dockerfile' || $this->application->build_pack === 'dockerimage') {
                     $this->application_deployment_queue->addLogEntry('----------------------------------------');
-                    $this->application_deployment_queue->addLogEntry("WARNING: Dockerfile or Docker Image based deployment detected. The healthcheck needs a curl or wget command to check the health of the application. Please make sure that it is available in the image or turn off healthcheck on Coolify's UI.");
+                    $this->application_deployment_queue->addLogEntry("WARNING: Dockerfile or Docker Image based deployment detected. The healthcheck needs a curl or wget command to check the health of the application. Please make sure that it is available in the image or turn off healthcheck on Bedrock's UI.");
                     $this->application_deployment_queue->addLogEntry('----------------------------------------');
                 }
                 $this->application_deployment_queue->addLogEntry('New container is not healthy, rolling back to the old container.');
@@ -3383,16 +3383,16 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
                 $this->application_deployment_queue->addLogEntry('Pulling latest images from the registry.');
                 $this->execute_remote_command(
                     [executeInDocker($this->deployment_uuid, "docker compose --project-name {$this->application->uuid} --project-directory {$this->workdir} pull"), 'hidden' => true],
-                    [executeInDocker($this->deployment_uuid, "{$this->coolify_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->workdir} up --build -d"), 'hidden' => true],
+                    [executeInDocker($this->deployment_uuid, "{$this->bedrock_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->workdir} up --build -d"), 'hidden' => true],
                 );
             } else {
                 if ($this->use_build_server) {
                     $this->execute_remote_command(
-                        ["{$this->coolify_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->configuration_dir} -f {$this->configuration_dir}{$this->docker_compose_location} up --pull always --build -d", 'hidden' => true],
+                        ["{$this->bedrock_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->configuration_dir} -f {$this->configuration_dir}{$this->docker_compose_location} up --pull always --build -d", 'hidden' => true],
                     );
                 } else {
                     $this->execute_remote_command(
-                        [executeInDocker($this->deployment_uuid, "{$this->coolify_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->workdir} -f {$this->workdir}{$this->docker_compose_location} up --build -d"), 'hidden' => true],
+                        [executeInDocker($this->deployment_uuid, "{$this->bedrock_variables} docker compose --project-name {$this->application->uuid} --project-directory {$this->workdir} -f {$this->workdir}{$this->docker_compose_location} up --build -d"), 'hidden' => true],
                     );
                 }
             }
@@ -3641,14 +3641,14 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
                     $argsToInsert->push("ARG {$env->key}={$env->getResolvedValueWithServer($this->mainServer)}");
                 }
             }
-            // Add Coolify variables as ARGs
-            if ($this->coolify_variables) {
-                $coolify_vars = collect(explode(' ', trim($this->coolify_variables)))
+            // Add Bedrock variables as ARGs
+            if ($this->bedrock_variables) {
+                $bedrock_vars = collect(explode(' ', trim($this->bedrock_variables)))
                     ->filter()
                     ->map(function ($var) {
                         return "ARG {$var}";
                     });
-                $argsToInsert = $argsToInsert->merge($coolify_vars);
+                $argsToInsert = $argsToInsert->merge($bedrock_vars);
             }
         } else {
             // Only add preview environment variables that are available during build
@@ -3663,14 +3663,14 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
                     $argsToInsert->push("ARG {$env->key}={$env->getResolvedValueWithServer($this->mainServer)}");
                 }
             }
-            // Add Coolify variables as ARGs
-            if ($this->coolify_variables) {
-                $coolify_vars = collect(explode(' ', trim($this->coolify_variables)))
+            // Add Bedrock variables as ARGs
+            if ($this->bedrock_variables) {
+                $bedrock_vars = collect(explode(' ', trim($this->bedrock_variables)))
                     ->filter()
                     ->map(function ($var) {
                         return "ARG {$var}";
                     });
-                $argsToInsert = $argsToInsert->merge($coolify_vars);
+                $argsToInsert = $argsToInsert->merge($bedrock_vars);
             }
         }
 

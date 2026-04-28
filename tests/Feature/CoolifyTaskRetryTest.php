@@ -1,13 +1,13 @@
 <?php
 
-use App\Jobs\CoolifyTask;
+use App\Jobs\BedrockTask;
 use App\Models\Server;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 
 uses(RefreshDatabase::class);
 
-it('can dispatch CoolifyTask successfully', function () {
+it('can dispatch BedrockTask successfully', function () {
     // Skip if no servers available
     $server = Server::where('ip', '!=', '1.2.3.4')->first();
 
@@ -28,7 +28,7 @@ it('can dispatch CoolifyTask successfully', function () {
         ->log('[]');
 
     // Dispatch the job
-    CoolifyTask::dispatch(
+    BedrockTask::dispatch(
         activity: $activity,
         ignore_errors: false,
         call_event_on_finish: null,
@@ -36,10 +36,10 @@ it('can dispatch CoolifyTask successfully', function () {
     );
 
     // Assert job was dispatched
-    Queue::assertPushed(CoolifyTask::class);
+    Queue::assertPushed(BedrockTask::class);
 });
 
-it('has correct retry configuration on CoolifyTask', function () {
+it('has correct retry configuration on BedrockTask', function () {
     $server = Server::where('ip', '!=', '1.2.3.4')->first();
 
     if (! $server) {
@@ -55,7 +55,7 @@ it('has correct retry configuration on CoolifyTask', function () {
         ->event('inline')
         ->log('[]');
 
-    $job = new CoolifyTask(
+    $job = new BedrockTask(
         activity: $activity,
         ignore_errors: false,
         call_event_on_finish: null,

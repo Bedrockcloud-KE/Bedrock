@@ -1,32 +1,32 @@
 <?php
 
 return [
-    'coolify' => [
+    'bedrock' => [
         'version' => '4.0.0',
         'helper_version' => '1.0.13',
         'realtime_version' => '1.0.13',
         'self_hosted' => env('SELF_HOSTED', true),
         'autoupdate' => env('AUTOUPDATE'),
-        'base_config_path' => env('BASE_CONFIG_PATH', '/data/coolify'),
+        'base_config_path' => env('BASE_CONFIG_PATH', '/data/bedrock'),
         'registry_url' => env('REGISTRY_URL', 'ghcr.io'),
-        'helper_image' => env('HELPER_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/coolify-helper'),
-        'realtime_image' => env('REALTIME_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/coolify-realtime'),
+        'helper_image' => env('HELPER_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/bedrock-helper'),
+        'realtime_image' => env('REALTIME_IMAGE', env('REGISTRY_URL', 'ghcr.io').'/coollabsio/bedrock-realtime'),
         'is_windows_docker_desktop' => env('IS_WINDOWS_DOCKER_DESKTOP', false),
-        'cdn_url' => env('CDN_URL', 'https://cdn.coollabs.io'),
-        'versions_url' => env('VERSIONS_URL', env('CDN_URL', 'https://cdn.coollabs.io').'/coolify/versions.json'),
-        'upgrade_script_url' => env('UPGRADE_SCRIPT_URL', env('CDN_URL', 'https://cdn.coollabs.io').'/coolify/upgrade.sh'),
-        'releases_url' => 'https://cdn.coolify.io/releases.json',
+        'cdn_url' => env('CDN_URL', 'https://cdn.bedrock.cloud'),
+        'versions_url' => env('VERSIONS_URL', env('CDN_URL', 'https://cdn.bedrock.cloud').'/bedrock/versions.json'),
+        'upgrade_script_url' => env('UPGRADE_SCRIPT_URL', env('CDN_URL', 'https://cdn.bedrock.cloud').'/bedrock/upgrade.sh'),
+        'releases_url' => 'https://cdn.bedrock.io/releases.json',
     ],
 
     'urls' => [
-        'docs' => 'https://coolify.io/docs',
-        'contact' => 'https://coolify.io/docs/contact',
+        'docs' => 'https://bedrock.io/docs',
+        'contact' => 'https://bedrock.io/docs/contact',
     ],
 
     'services' => [
         // Temporary disabled until cache is implemented
-        // 'official' => 'https://cdn.coollabs.io/coolify/service-templates.json',
-        'official' => 'https://raw.githubusercontent.com/coollabsio/coolify/v4.x/templates/service-templates-latest.json',
+        // 'official' => 'https://cdn.bedrock.cloud/bedrock/service-templates.json',
+        'official' => 'https://raw.githubusercontent.com/coollabsio/bedrock/v4.x/templates/service-templates-latest.json',
         'file_name' => 'service-templates-latest.json',
     ],
 

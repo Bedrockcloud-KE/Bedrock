@@ -16,8 +16,8 @@ class ConfigureCloudflared
         try {
             $config = [
                 'services' => [
-                    'coolify-cloudflared' => [
-                        'container_name' => 'coolify-cloudflared',
+                    'bedrock-cloudflared' => [
+                        'container_name' => 'bedrock-cloudflared',
                         'image' => 'cloudflare/cloudflared:latest',
                         'restart' => RESTART_MODE,
                         'network_mode' => 'host',
@@ -44,9 +44,9 @@ class ConfigureCloudflared
                 'echo Pulling latest Cloudflare Tunnel image.',
                 'docker compose pull',
                 'echo Stopping existing Cloudflare Tunnel container.',
-                'docker rm -f coolify-cloudflared || true',
+                'docker rm -f bedrock-cloudflared || true',
                 'echo Starting new Cloudflare Tunnel container.',
-                'docker compose up --wait --wait-timeout 15 --remove-orphans || docker logs coolify-cloudflared',
+                'docker compose up --wait --wait-timeout 15 --remove-orphans || docker logs bedrock-cloudflared',
             ]);
 
             return remote_process($commands, $server, callEventOnFinish: 'CloudflareTunnelChanged', callEventData: [

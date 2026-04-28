@@ -26,7 +26,7 @@ beforeEach(function () {
 
     StandaloneDocker::withoutEvents(function () {
         $this->destination = $this->server->standaloneDockers()->firstOrCreate(
-            ['network' => 'coolify'],
+            ['network' => 'bedrock'],
             ['uuid' => (string) new Cuid2, 'name' => 'test-docker']
         );
     });

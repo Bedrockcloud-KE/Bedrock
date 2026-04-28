@@ -659,15 +659,15 @@ EOD;
             }
 
             // Get helper image
-            $helperImage = config('constants.coolify.helper_image');
+            $helperImage = config('constants.bedrock.helper_image');
             $latestVersion = getHelperVersion();
             $fullImageName = "{$helperImage}:{$latestVersion}";
 
             // Get the database destination network
             if ($this->resource->getMorphClass() === \App\Models\ServiceDatabase::class) {
-                $destinationNetwork = $this->resource->service->destination->network ?? 'coolify';
+                $destinationNetwork = $this->resource->service->destination->network ?? 'bedrock';
             } else {
-                $destinationNetwork = $this->resource->destination->network ?? 'coolify';
+                $destinationNetwork = $this->resource->destination->network ?? 'bedrock';
             }
 
             // Generate unique names for this operation

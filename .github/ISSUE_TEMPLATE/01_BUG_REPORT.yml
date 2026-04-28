@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         > [!IMPORTANT]
-        > **Please ensure you are using the latest version of Coolify before submitting an issue, as the bug may have already been fixed in a recent update.** (Of course, if you're experiencing an issue on the latest version that wasn't present in a previous version, please let us know.)
+        > **Please ensure you are using the latest version of Bedrock before submitting an issue, as the bug may have already been fixed in a recent update.** (Of course, if you're experiencing an issue on the latest version that wasn't present in a previous version, please let us know.)
 
   - type: textarea
     attributes:
@@ -35,18 +35,18 @@ body:
 
   - type: input
     attributes:
-      label: Coolify Version
-      description: Please provide the Coolify version you are using. This can be found in the top left corner of your Coolify dashboard.
+      label: Bedrock Version
+      description: Please provide the Bedrock version you are using. This can be found in the top left corner of your Bedrock dashboard.
       placeholder: "v4.0.0-beta.335"
     validations:
       required: true
 
   - type: dropdown
     attributes:
-      label: Are you using Coolify Cloud?
+      label: Are you using Bedrock Cloud?
       options:
         - "No (self-hosted)"
-        - "Yes (Coolify Cloud)"
+        - "Yes (Bedrock Cloud)"
     validations:
       required: true
 

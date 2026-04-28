@@ -29,7 +29,7 @@ class StartMongodb
         $container_name = $this->database->uuid;
         $this->configuration_dir = database_configuration_dir().'/'.$container_name;
         if (isDev()) {
-            $this->configuration_dir = '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/databases/'.$container_name;
+            $this->configuration_dir = '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/databases/'.$container_name;
         }
 
         $this->commands = [
@@ -202,7 +202,7 @@ class StartMongodb
                 [
                     [
                         'type' => 'bind',
-                        'source' => '/data/coolify/ssl/coolify-ca.crt',
+                        'source' => '/data/bedrock/ssl/bedrock-ca.crt',
                         'target' => '/etc/mongo/certs/ca.pem',
                         'read_only' => true,
                     ],
@@ -322,7 +322,7 @@ class StartMongodb
             $environment_variables->push("MONGO_INITDB_DATABASE={$this->database->mongo_initdb_database}");
         }
 
-        add_coolify_default_environment_variables($this->database, $environment_variables, $environment_variables);
+        add_bedrock_default_environment_variables($this->database, $environment_variables, $environment_variables);
 
         return $environment_variables->all();
     }

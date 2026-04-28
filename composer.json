@@ -1,10 +1,10 @@
 {
-    "name": "coollabsio/coolify",
-    "description": "The Coolify project.",
+    "name": "coollabsio/bedrock",
+    "description": "The Bedrock project.",
     "license": "Apache-2.0",
     "type": "project",
     "keywords": [
-        "coolify",
+        "bedrock",
         "deployment",
         "docker",
         "self-hosted",

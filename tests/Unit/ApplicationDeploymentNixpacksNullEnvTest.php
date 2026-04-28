@@ -69,8 +69,8 @@ it('filters out null environment variables from nixpacks build command', functio
     $pullRequestProperty->setAccessible(true);
     $pullRequestProperty->setValue($job, 0);
 
-    // Mock generate_coolify_env_variables to return some values including null
-    $job->shouldReceive('generate_coolify_env_variables')
+    // Mock generate_bedrock_env_variables to return some values including null
+    $job->shouldReceive('generate_bedrock_env_variables')
         ->andReturn(collect([
             'COOLIFY_FQDN' => 'example.com',
             'COOLIFY_URL' => null,  // null value that should be filtered
@@ -148,8 +148,8 @@ it('filters out null environment variables from nixpacks preview deployments', f
     $pullRequestProperty->setAccessible(true);
     $pullRequestProperty->setValue($job, 123);  // Non-zero for preview deployment
 
-    // Mock generate_coolify_env_variables
-    $job->shouldReceive('generate_coolify_env_variables')
+    // Mock generate_bedrock_env_variables
+    $job->shouldReceive('generate_bedrock_env_variables')
         ->andReturn(collect([
             'COOLIFY_FQDN' => 'preview.example.com',
         ]));
@@ -215,8 +215,8 @@ it('handles all environment variables being null or empty', function () {
     $pullRequestProperty->setAccessible(true);
     $pullRequestProperty->setValue($job, 0);
 
-    // Mock generate_coolify_env_variables to return all null/empty values
-    $job->shouldReceive('generate_coolify_env_variables')
+    // Mock generate_bedrock_env_variables to return all null/empty values
+    $job->shouldReceive('generate_bedrock_env_variables')
         ->andReturn(collect([
             'COOLIFY_URL' => null,
             'COOLIFY_BRANCH' => '',
@@ -236,16 +236,16 @@ it('handles all environment variables being null or empty', function () {
     expect($envArgs)->toBe('');
 });
 
-it('filters out null coolify env variables from env_args used in nixpacks plan JSON', function () {
+it('filters out null bedrock env variables from env_args used in nixpacks plan JSON', function () {
     // This test verifies the fix for GitHub issue #6830:
     // When application->fqdn is null, COOLIFY_FQDN/COOLIFY_URL get set to null
-    // in generate_coolify_env_variables(). The generate_env_variables() method
+    // in generate_bedrock_env_variables(). The generate_env_variables() method
     // merges these into env_args which become the nixpacks plan JSON "variables".
     // Nixpacks requires all variable values to be strings, so null causes:
     // "Error: Failed to parse Nixpacks config file - invalid type: null, expected a string"
 
-    // Simulate the coolify env collection with null values (as produced when fqdn is null)
-    $coolify_envs = collect([
+    // Simulate the bedrock env collection with null values (as produced when fqdn is null)
+    $bedrock_envs = collect([
         'COOLIFY_URL' => null,
         'COOLIFY_FQDN' => null,
         'COOLIFY_BRANCH' => 'main',
@@ -255,7 +255,7 @@ it('filters out null coolify env variables from env_args used in nixpacks plan J
 
     // Apply the same filtering logic used in generate_env_variables()
     $env_args = collect([]);
-    $coolify_envs->each(function ($value, $key) use ($env_args) {
+    $bedrock_envs->each(function ($value, $key) use ($env_args) {
         if (! is_null($value) && $value !== '') {
             $env_args->put($key, $value);
         }
@@ -321,8 +321,8 @@ it('preserves environment variables with zero values', function () {
     $pullRequestProperty->setAccessible(true);
     $pullRequestProperty->setValue($job, 0);
 
-    // Mock generate_coolify_env_variables
-    $job->shouldReceive('generate_coolify_env_variables')
+    // Mock generate_bedrock_env_variables
+    $job->shouldReceive('generate_bedrock_env_variables')
         ->andReturn(collect([]));
 
     // Call the private method

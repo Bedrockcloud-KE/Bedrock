@@ -2,17 +2,17 @@ blank_issues_enabled: false
 
 contact_links:
   - name: 🤔 Questions and Community Support
-    url: https://coollabs.io/discord
+    url: https://bedrock.cloud/discord
     about: If you have any questions, reach out to us on Discord inside the "#support" channel.
 
   - name: 💡 Feature Request
-    url: https://github.com/coollabsio/coolify/discussions/categories/feature-requests
-    about: Suggest a new feature for Coolify.
+    url: https://github.com/coollabsio/bedrock/discussions/categories/feature-requests
+    about: Suggest a new feature for Bedrock.
 
   - name: ⚙️ Service Request
-    url: https://github.com/coollabsio/coolify/discussions/categories/service-requests
-    about: Request a new service integration for Coolify.
+    url: https://github.com/coollabsio/bedrock/discussions/categories/service-requests
+    about: Request a new service integration for Bedrock.
 
   - name: 🔧 Improvements
-    url: https://github.com/coollabsio/coolify/discussions/categories/improvements
-    about: Suggest improvements to existing features for Coolify.
+    url: https://github.com/coollabsio/bedrock/discussions/categories/improvements
+    about: Suggest improvements to existing features for Bedrock.

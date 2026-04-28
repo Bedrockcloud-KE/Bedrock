@@ -33,7 +33,7 @@ beforeEach(function () {
     $this->server = Server::factory()->create(['team_id' => $this->team->id]);
     $this->destination = StandaloneDocker::factory()->create([
         'server_id' => $this->server->id,
-        'network' => 'coolify-'.Str::lower(Str::random(8)),
+        'network' => 'bedrock-'.Str::lower(Str::random(8)),
     ]);
     $this->project = Project::factory()->create(['team_id' => $this->team->id]);
     $this->environment = Environment::factory()->create(['project_id' => $this->project->id]);

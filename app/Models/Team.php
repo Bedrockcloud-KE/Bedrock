@@ -152,7 +152,7 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
     {
         return Attribute::make(
             get: function () {
-                if (config('constants.coolify.self_hosted') || $this->id === 0) {
+                if (config('constants.bedrock.self_hosted') || $this->id === 0) {
                     return 999999999999;
                 }
 

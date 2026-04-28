@@ -1,6 +1,6 @@
-# Coolify Design System
+# Bedrock Design System
 
-> **Purpose**: AI/LLM-consumable reference for replicating Coolify's visual design in new applications. Contains design tokens, component styles, and interactive states — with both Tailwind CSS classes and plain CSS equivalents.
+> **Purpose**: AI/LLM-consumable reference for replicating Bedrock's visual design in new applications. Contains design tokens, component styles, and interactive states — with both Tailwind CSS classes and plain CSS equivalents.
 
 ---
 
@@ -115,7 +115,7 @@
 
 #### Input / Select Box-Shadow System
 
-Coolify uses **inset box-shadows instead of borders** for inputs and selects. This enables a unique "dirty indicator" — a colored left-edge bar.
+Bedrock uses **inset box-shadows instead of borders** for inputs and selects. This enables a unique "dirty indicator" — a colored left-edge bar.
 
 ```css
 /* Default state */

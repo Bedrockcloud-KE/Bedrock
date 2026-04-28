@@ -1,6 +1,6 @@
 {{ Illuminate\Mail\Markdown::parse('---') }}
 
 Thank you,<br>
-{{ config('app.name') ?? 'Coolify' }}
+{{ config('app.name') ?? 'Bedrock' }}
 
-{{ Illuminate\Mail\Markdown::parse('[Contact Support](https://coolify.io/docs/contact)') }}
+{{ Illuminate\Mail\Markdown::parse('[Contact Support](https://bedrock.io/docs/contact)') }}

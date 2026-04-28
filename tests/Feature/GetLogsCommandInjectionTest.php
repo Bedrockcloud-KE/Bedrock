@@ -157,6 +157,6 @@ describe('GetLogs container name injection payloads are blocked by validation', 
         expect(ValidationPatterns::isValidContainerName('postgresql'))->toBeTrue();
         expect(ValidationPatterns::isValidContainerName('my-app-container'))->toBeTrue();
         expect(ValidationPatterns::isValidContainerName('service_db.v2'))->toBeTrue();
-        expect(ValidationPatterns::isValidContainerName('coolify-proxy'))->toBeTrue();
+        expect(ValidationPatterns::isValidContainerName('bedrock-proxy'))->toBeTrue();
     });
 });

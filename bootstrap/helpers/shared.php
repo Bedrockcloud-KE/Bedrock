@@ -68,7 +68,7 @@ use Visus\Cuid2\Cuid2;
 
 function base_configuration_dir(): string
 {
-    return '/data/coolify';
+    return '/data/bedrock';
 }
 function application_configuration_dir(): string
 {
@@ -411,20 +411,20 @@ function get_route_parameters(): array
 function get_latest_sentinel_version(): string
 {
     try {
-        $response = Http::get(config('constants.coolify.versions_url'));
+        $response = Http::get(config('constants.bedrock.versions_url'));
         $versions = $response->json();
 
-        return data_get($versions, 'coolify.sentinel.version');
+        return data_get($versions, 'bedrock.sentinel.version');
     } catch (Throwable) {
         return '0.0.0';
     }
 }
-function get_latest_version_of_coolify(): string
+function get_latest_version_of_bedrock(): string
 {
     try {
         $versions = get_versions_data();
 
-        return data_get($versions, 'coolify.v4.version', '0.0.0');
+        return data_get($versions, 'bedrock.v4.version', '0.0.0');
     } catch (Throwable $e) {
 
         return '0.0.0';
@@ -451,14 +451,14 @@ function generateSSHKey(string $type = 'rsa')
 
         return [
             'private' => $key->toString('PKCS1'),
-            'public' => $key->getPublicKey()->toString('OpenSSH', ['comment' => 'coolify-generated-ssh-key']),
+            'public' => $key->getPublicKey()->toString('OpenSSH', ['comment' => 'bedrock-generated-ssh-key']),
         ];
     } elseif ($type === 'ed25519') {
         $key = EC::createKey('Ed25519');
 
         return [
             'private' => $key->toString('OpenSSH'),
-            'public' => $key->getPublicKey()->toString('OpenSSH', ['comment' => 'coolify-generated-ssh-key']),
+            'public' => $key->getPublicKey()->toString('OpenSSH', ['comment' => 'bedrock-generated-ssh-key']),
         ];
     }
     throw new Exception('Invalid key type');
@@ -589,7 +589,7 @@ function isDev(): bool
 
 function isCloud(): bool
 {
-    return ! config('constants.coolify.self_hosted');
+    return ! config('constants.bedrock.self_hosted');
 }
 
 function translate_cron_expression($expression_to_validate): string
@@ -980,7 +980,7 @@ function generateFqdn(Server $server, string $random, bool $forceHttps = false, 
         $scheme = 'https';
     }
 
-    if ($parserVersion >= 5 && version_compare(config('constants.coolify.version'), '4.0.0-beta.420.7', '>=')) {
+    if ($parserVersion >= 5 && version_compare(config('constants.bedrock.version'), '4.0.0-beta.420.7', '>=')) {
         return "{$random}.$host$path";
     }
 
@@ -2086,7 +2086,7 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                 $savedService->save();
 
                 if (! $hasValidNetworkMode) {
-                    // Add Coolify specific networks
+                    // Add Bedrock specific networks
                     $definedNetworkExists = $topLevelNetworks->contains(function ($value, $_) use ($definedNetwork) {
                         return $value == $definedNetwork;
                     });
@@ -2584,8 +2584,8 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                 return $service;
             });
 
-            $envs_from_coolify = $resource->environment_variables()->get();
-            $services = collect($services)->map(function ($service, $serviceName) use ($resource, $envs_from_coolify) {
+            $envs_from_bedrock = $resource->environment_variables()->get();
+            $services = collect($services)->map(function ($service, $serviceName) use ($resource, $envs_from_bedrock) {
                 $serviceVariables = collect(data_get($service, 'environment', []));
                 $parsedServiceVariables = collect([]);
                 foreach ($serviceVariables as $key => $value) {
@@ -2620,9 +2620,9 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                     $parsedServiceVariables->put('COOLIFY_PROJECT_NAME', "\"{$resource->project()->name}\"");
                 }
 
-                $parsedServiceVariables = $parsedServiceVariables->map(function ($value, $key) use ($envs_from_coolify) {
+                $parsedServiceVariables = $parsedServiceVariables->map(function ($value, $key) use ($envs_from_bedrock) {
                     if (! str($value)->startsWith('$')) {
-                        $found_env = $envs_from_coolify->where('key', $key)->first();
+                        $found_env = $envs_from_bedrock->where('key', $key)->first();
                         if ($found_env) {
                             return $found_env->value;
                         }
@@ -3437,7 +3437,7 @@ function isAssociativeArray($array)
  *
  *  Theses variables are added in place to the $where_to_add array.
  */
-function add_coolify_default_environment_variables(StandaloneRedis|StandalonePostgresql|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|StandaloneKeydb|StandaloneDragonfly|StandaloneClickhouse|Application|Service $resource, Collection &$where_to_add, ?Collection $where_to_check = null)
+function add_bedrock_default_environment_variables(StandaloneRedis|StandalonePostgresql|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|StandaloneKeydb|StandaloneDragonfly|StandaloneClickhouse|Application|Service $resource, Collection &$where_to_add, ?Collection $where_to_check = null)
 {
     // Currently disabled
     return;
@@ -3565,7 +3565,7 @@ function getHelperVersion(): string
         return $settings->dev_helper_version;
     }
 
-    return config('constants.coolify.helper_version');
+    return config('constants.bedrock.helper_version');
 }
 
 function loggy($message = null, array $context = [])

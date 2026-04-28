@@ -79,7 +79,7 @@ describe('ServerSetting::isValidSentinelToken', function () {
     });
 
     it('rejects the reported PoC payload', function () {
-        expect(ServerSetting::isValidSentinelToken('abc" ; id >/tmp/coolify_poc_sentinel ; echo "'))->toBeFalse();
+        expect(ServerSetting::isValidSentinelToken('abc" ; id >/tmp/bedrock_poc_sentinel ; echo "'))->toBeFalse();
     });
 });
 

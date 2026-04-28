@@ -50,7 +50,7 @@ class SettingsBackup extends Component
         }
         $settings = instanceSettings();
         $this->server = Server::findOrFail(0);
-        $this->database = StandalonePostgresql::whereName('coolify-db')->first();
+        $this->database = StandalonePostgresql::whereName('bedrock-db')->first();
         $s3s = S3Storage::whereTeamId(0)->get() ?? [];
         if ($this->database) {
             $this->uuid = $this->database->uuid;
@@ -74,11 +74,11 @@ class SettingsBackup extends Component
         $this->s3s = $s3s;
     }
 
-    public function addCoolifyDatabase()
+    public function addBedrockDatabase()
     {
         try {
             $server = Server::findOrFail(0);
-            $out = instant_remote_process(['docker inspect coolify-db'], $server);
+            $out = instant_remote_process(['docker inspect bedrock-db'], $server);
             $envs = format_docker_envs_to_json($out);
             $postgres_password = $envs['POSTGRES_PASSWORD'];
             $postgres_user = $envs['POSTGRES_USER'];
@@ -86,8 +86,8 @@ class SettingsBackup extends Component
             $this->database = new StandalonePostgresql;
             $this->database->forceFill([
                 'id' => 0,
-                'name' => 'coolify-db',
-                'description' => 'Coolify database',
+                'name' => 'bedrock-db',
+                'description' => 'Bedrock database',
                 'postgres_user' => $postgres_user,
                 'postgres_password' => $postgres_password,
                 'postgres_db' => $postgres_db,

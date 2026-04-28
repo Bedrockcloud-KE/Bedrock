@@ -1,4 +1,4 @@
-# Coolify Technology Stack
+# Bedrock Technology Stack
 
 ## Frontend
 

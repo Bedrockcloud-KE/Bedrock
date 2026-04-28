@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Actions\Server\UpdateCoolify;
+use App\Actions\Server\UpdateBedrock;
 use App\Models\InstanceSettings;
 use App\Models\Server;
 use Livewire\Component;
@@ -37,8 +37,8 @@ class Upgrade extends Component
 
     protected function refreshUpgradeState(): void
     {
-        $this->currentVersion = config('constants.coolify.version');
-        $this->latestVersion = get_latest_version_of_coolify();
+        $this->currentVersion = config('constants.bedrock.version');
+        $this->latestVersion = get_latest_version_of_bedrock();
         $this->devMode = isDev();
 
         if ($this->devMode) {
@@ -66,7 +66,7 @@ class Upgrade extends Component
                 return;
             }
             $this->updateInProgress = true;
-            UpdateCoolify::run(manual_update: true);
+            UpdateBedrock::run(manual_update: true);
         } catch (\Throwable $e) {
             return handleError($e, $this);
         }
@@ -84,7 +84,7 @@ class Upgrade extends Component
             return ['status' => 'none'];
         }
 
-        $statusFile = '/data/coolify/source/.upgrade-status';
+        $statusFile = '/data/bedrock/source/.upgrade-status';
 
         try {
             $content = instant_remote_process(

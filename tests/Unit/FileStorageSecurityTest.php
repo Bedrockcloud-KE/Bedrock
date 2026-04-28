@@ -123,7 +123,7 @@ test('file storage accepts safe file mount paths', function () {
     $safePaths = [
         '/etc/nginx/nginx.conf',
         '/app/.env',
-        '/data/coolify/services/abc123/config.yml',
+        '/data/bedrock/services/abc123/config.yml',
         '/var/www/html/index.php',
         '/opt/app/config/database.json',
     ];

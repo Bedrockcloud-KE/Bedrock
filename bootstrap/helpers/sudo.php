@@ -16,9 +16,9 @@ function shouldChangeOwnership(string $path): bool
         }
     }
 
-    $isCoolifyPath = Str::startsWith($path, '/data/coolify') || Str::startsWith($path, '/tmp/coolify');
+    $isBedrockPath = Str::startsWith($path, '/data/bedrock') || Str::startsWith($path, '/tmp/bedrock');
 
-    return $isCoolifyPath;
+    return $isBedrockPath;
 }
 function parseCommandsByLineForSudo(Collection $commands, Server $server): array
 {

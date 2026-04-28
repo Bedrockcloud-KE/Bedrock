@@ -46,9 +46,9 @@ class DiscordMessage
 
     public function toPayload(): array
     {
-        $footerText = 'Coolify v'.config('constants.coolify.version');
+        $footerText = 'Bedrock v'.config('constants.bedrock.version');
         if (isCloud()) {
-            $footerText = 'Coolify Cloud';
+            $footerText = 'Bedrock Cloud';
         }
         $payload = [
             'embeds' => [

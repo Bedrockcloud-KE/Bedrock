@@ -27,7 +27,7 @@ uZx9iFkCELtxrh31QJ68AAAAEXNhaWxANzZmZjY2ZDJlMmRkAQIDBA==
 
     Server::factory()->create([
         'name' => 'Test Server',
-        'ip' => 'coolify-testing-host',
+        'ip' => 'bedrock-testing-host',
         'team_id' => $this->team->id,
         'private_key_id' => $this->privateKey->id,
     ]);

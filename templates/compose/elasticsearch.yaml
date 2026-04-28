@@ -1,5 +1,5 @@
 # documentation: https://www.elastic.co/products/elasticsearch
-# slogan: Elasticsearch is free and Open Source, Distributed, RESTful Search Engine.
+# slogan: Elasticsearch is free and Open Source (AGPL-3.0), Distributed, RESTful Search Engine.
 # tags: search,engine,fulltext,full,text,elasticsearch
 # category: search
 # logo: svgs/elasticsearch.svg
@@ -14,7 +14,7 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m # memory set to 512MB
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - xpack.security.http.ssl.enabled=false # Coolify handles SSL
+      - xpack.security.http.ssl.enabled=false # Bedrock handles SSL
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:

@@ -137,7 +137,7 @@ class Index extends Component
 
             if ($this->settings->is_dns_validation_enabled && $this->fqdn && $this->server) {
                 if (! validateDNSEntry($this->fqdn, $this->server)) {
-                    $this->dispatch('error', "Validating DNS failed.<br><br>Make sure you have added the DNS records correctly.<br><br>{$this->fqdn}->{$this->server->ip}<br><br>Check this <a target='_blank' class='underline dark:text-white' href='https://coolify.io/docs/knowledge-base/dns-configuration'>documentation</a> for further help.");
+                    $this->dispatch('error', "Validating DNS failed.<br><br>Make sure you have added the DNS records correctly.<br><br>{$this->fqdn}->{$this->server->ip}<br><br>Check this <a target='_blank' class='underline dark:text-white' href='https://bedrock.io/docs/knowledge-base/dns-configuration'>documentation</a> for further help.");
                     $error_show = true;
                 }
             }
@@ -187,7 +187,7 @@ class Index extends Component
 
             $this->validateOnly('dev_helper_version');
 
-            $version = $this->dev_helper_version ?: config('constants.coolify.helper_version');
+            $version = $this->dev_helper_version ?: config('constants.bedrock.helper_version');
             if (empty($version)) {
                 $this->dispatch('error', 'Please specify a version to build.');
 
@@ -200,8 +200,8 @@ class Index extends Component
                 return;
             }
 
-            $imageRef = escapeshellarg("ghcr.io/coollabsio/coolify-helper:{$version}");
-            $buildCommand = "docker build -t {$imageRef} -f docker/coolify-helper/Dockerfile .";
+            $imageRef = escapeshellarg("ghcr.io/coollabsio/bedrock-helper:{$version}");
+            $buildCommand = "docker build -t {$imageRef} -f docker/bedrock-helper/Dockerfile .";
 
             $activity = remote_process(
                 command: [$buildCommand],
@@ -212,7 +212,7 @@ class Index extends Component
             $this->buildActivityId = $activity->id;
             $this->dispatch('activityMonitor', $activity->id);
 
-            $this->dispatch('success', "Building coolify-helper:{$version}...");
+            $this->dispatch('success', "Building bedrock-helper:{$version}...");
         } catch (\Exception $e) {
             return handleError($e, $this);
         }

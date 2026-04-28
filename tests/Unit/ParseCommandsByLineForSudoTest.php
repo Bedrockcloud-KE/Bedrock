@@ -176,28 +176,28 @@ test('skips sudo for fi statements', function () {
     expect($result[0])->toBe('fi');
 });
 
-test('adds ownership changes for Coolify data paths', function () {
+test('adds ownership changes for Bedrock data paths', function () {
     $commands = collect([
-        'mkdir -p /data/coolify/logs',
+        'mkdir -p /data/bedrock/logs',
     ]);
 
     $result = parseCommandsByLineForSudo($commands, $this->server);
 
     // Note: The && operator adds another sudo, creating double sudo for chown/chmod
     // This is existing behavior that may need refactoring but isn't part of this bug fix
-    expect($result[0])->toBe('sudo mkdir -p /data/coolify/logs && sudo sudo chown -R ubuntu:ubuntu /data/coolify/logs && sudo sudo chmod -R o-rwx /data/coolify/logs');
+    expect($result[0])->toBe('sudo mkdir -p /data/bedrock/logs && sudo sudo chown -R ubuntu:ubuntu /data/bedrock/logs && sudo sudo chmod -R o-rwx /data/bedrock/logs');
 });
 
-test('adds ownership changes for Coolify tmp paths', function () {
+test('adds ownership changes for Bedrock tmp paths', function () {
     $commands = collect([
-        'mkdir -p /tmp/coolify/cache',
+        'mkdir -p /tmp/bedrock/cache',
     ]);
 
     $result = parseCommandsByLineForSudo($commands, $this->server);
 
     // Note: The && operator adds another sudo, creating double sudo for chown/chmod
     // This is existing behavior that may need refactoring but isn't part of this bug fix
-    expect($result[0])->toBe('sudo mkdir -p /tmp/coolify/cache && sudo sudo chown -R ubuntu:ubuntu /tmp/coolify/cache && sudo sudo chmod -R o-rwx /tmp/coolify/cache');
+    expect($result[0])->toBe('sudo mkdir -p /tmp/bedrock/cache && sudo sudo chown -R ubuntu:ubuntu /tmp/bedrock/cache && sudo sudo chmod -R o-rwx /tmp/bedrock/cache');
 });
 
 test('does not add ownership changes for system paths', function () {
@@ -403,19 +403,19 @@ test('skips sudo for bash control structure keywords - elif', function () {
 test('handles real-world proxy startup with for loop from StartProxy action', function () {
     // This is the exact command structure that was causing the bug in issue #7346
     $commands = collect([
-        'if docker ps -a --format "{{.Names}}" | grep -q "^coolify-proxy$"; then',
-        "    echo 'Stopping and removing existing coolify-proxy.'",
-        '    docker stop coolify-proxy 2>/dev/null || true',
-        '    docker rm -f coolify-proxy 2>/dev/null || true',
+        'if docker ps -a --format "{{.Names}}" | grep -q "^bedrock-proxy$"; then',
+        "    echo 'Stopping and removing existing bedrock-proxy.'",
+        '    docker stop bedrock-proxy 2>/dev/null || true',
+        '    docker rm -f bedrock-proxy 2>/dev/null || true',
         '    # Wait for container to be fully removed',
         '    for i in {1..10}; do',
-        '        if ! docker ps -a --format "{{.Names}}" | grep -q "^coolify-proxy$"; then',
+        '        if ! docker ps -a --format "{{.Names}}" | grep -q "^bedrock-proxy$"; then',
         '            break',
         '        fi',
-        '        echo "Waiting for coolify-proxy to be removed... ($i/10)"',
+        '        echo "Waiting for bedrock-proxy to be removed... ($i/10)"',
         '        sleep 1',
         '    done',
-        "    echo 'Successfully stopped and removed existing coolify-proxy.'",
+        "    echo 'Successfully stopped and removed existing bedrock-proxy.'",
         'fi',
     ]);
 

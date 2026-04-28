@@ -53,7 +53,7 @@ class StartDatabaseProxy
         $configuration_dir = database_proxy_dir($database->uuid);
         $host_configuration_dir = $configuration_dir;
         if (isDev()) {
-            $host_configuration_dir = '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/databases/'.$database->uuid.'/proxy';
+            $host_configuration_dir = '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/databases/'.$database->uuid.'/proxy';
         }
         $timeoutConfig = $this->buildProxyTimeoutConfig($database->public_port_timeout);
         $nginxconf = <<<EOF

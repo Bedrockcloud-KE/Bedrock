@@ -1,11 +1,11 @@
-name: Coolify Helper Image
+name: Bedrock Helper Image
 
 on:
   push:
     branches: [ "v4.x" ]
     paths:
-      - .github/workflows/coolify-helper.yml
-      - docker/coolify-helper/Dockerfile
+      - .github/workflows/bedrock-helper.yml
+      - docker/bedrock-helper/Dockerfile
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ permissions:
 env:
   GITHUB_REGISTRY: ghcr.io
   DOCKER_REGISTRY: docker.io
-  IMAGE_NAME: "coollabsio/coolify-helper"
+  IMAGE_NAME: "coollabsio/bedrock-helper"
 
 jobs:
   build-push:
@@ -56,14 +56,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: docker/coolify-helper/Dockerfile
+          file: docker/bedrock-helper/Dockerfile
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
             ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}-${{ matrix.arch }}
             ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}-${{ matrix.arch }}
           labels: |
-            coolify.managed=true
+            bedrock.managed=true
   merge-manifest:
     runs-on: ubuntu-24.04
     needs: build-push

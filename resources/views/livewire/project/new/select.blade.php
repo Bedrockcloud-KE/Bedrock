@@ -168,7 +168,7 @@
                                                 :src='service.logo'
                                                 x-on:error.window="$event.target.src = service.logo_github_url"
                                                 onerror="this.onerror=null; this.src=this.getAttribute('data-fallback');"
-                                                x-on:error="$event.target.src = '/coolify-logo.svg'"
+                                                x-on:error="$event.target.src = '/bedrock-logo.svg'"
                                                 :data-fallback='service.logo_github_url' />
                                         </template>
                                     </x-slot:logo>
@@ -202,7 +202,7 @@
                                     </div>
                                 </template>
                                 <template x-if="shouldShowDocIcon(service)">
-                                    <a :href="getDocLink(service) || coolifyDocsUrl(service.name)" target="_blank"
+                                    <a :href="getDocLink(service) || bedrockDocsUrl(service.name)" target="_blank"
                                         @click.stop @mouseenter="resolveDocLink(service)"
                                         class="absolute top-2 right-2 p-1.5 rounded hover:bg-neutral-200 dark:hover:bg-coolgray-300 transition-colors"
                                         :class="{ 'opacity-50': docCheckInProgress[service.name] }"
@@ -272,9 +272,9 @@
                             // Remove flavor suffixes: -with-*, -without-*
                             return normalized.replace(/-(with|without)-.+$/, '');
                         },
-                        coolifyDocsUrl(serviceName) {
+                        bedrockDocsUrl(serviceName) {
                             const baseName = this.extractBaseServiceName(serviceName);
-                            return 'https://coolify.io/docs/services/' + baseName;
+                            return 'https://bedrock.io/docs/services/' + baseName;
                         },
                         officialDocsUrl(service) {
                             return service.documentation || null;
@@ -306,14 +306,14 @@
 
                             this.docCheckInProgress[serviceName] = true;
 
-                            // 1. Try Coolify docs first
-                            const coolifyUrl = this.coolifyDocsUrl(serviceName);
-                            const coolifyExists = await this.checkUrlExists(coolifyUrl);
+                            // 1. Try Bedrock docs first
+                            const bedrockUrl = this.bedrockDocsUrl(serviceName);
+                            const bedrockExists = await this.checkUrlExists(bedrockUrl);
 
-                            if (coolifyExists) {
-                                this.docLinkCache[serviceName] = coolifyUrl;
+                            if (bedrockExists) {
+                                this.docLinkCache[serviceName] = bedrockUrl;
                                 this.docCheckInProgress[serviceName] = false;
-                                return coolifyUrl;
+                                return bedrockUrl;
                             }
 
                             // 2. Fall back to official docs
@@ -444,7 +444,7 @@
         <h2>Select a destination</h2>
         <div class="pb-4">Destinations are used to segregate resources by network. If you are unsure, select the
             default
-            Standalone Docker (coolify).</div>
+            Standalone Docker (bedrock).</div>
         <div class="flex flex-col justify-center gap-4 text-left xl:flex-row xl:flex-wrap">
             @if ($server->isSwarm())
                 @foreach ($swarmDockers as $swarmDocker)

@@ -59,22 +59,22 @@ test('blocks hidden files starting with dot', function () {
     expect($failed)->toBeTrue();
 });
 
-test('blocks reserved filename coolify.yaml', function () {
+test('blocks reserved filename bedrock.yaml', function () {
     $rule = new ValidProxyConfigFilename;
     $failed = false;
 
-    $rule->validate('fileName', 'coolify.yaml', function () use (&$failed) {
+    $rule->validate('fileName', 'bedrock.yaml', function () use (&$failed) {
         $failed = true;
     });
 
     expect($failed)->toBeTrue();
 });
 
-test('blocks reserved filename coolify.yml', function () {
+test('blocks reserved filename bedrock.yml', function () {
     $rule = new ValidProxyConfigFilename;
     $failed = false;
 
-    $rule->validate('fileName', 'coolify.yml', function () use (&$failed) {
+    $rule->validate('fileName', 'bedrock.yml', function () use (&$failed) {
         $failed = true;
     });
 
@@ -165,9 +165,9 @@ test('blocks nested path traversal', function () {
 
 test('allows similar but not reserved filenames', function () {
     $validFilenames = [
-        'coolify-custom.yaml',
-        'my-coolify.yaml',
-        'coolify2.yaml',
+        'bedrock-custom.yaml',
+        'my-bedrock.yaml',
+        'bedrock2.yaml',
         'Caddyfile.backup',
         'my-Caddyfile',
     ];

@@ -286,7 +286,7 @@ class StandaloneKeydb extends BaseModel
                 $url = "{$scheme}://:{$encodedPass}@{$this->uuid}:{$port}/0";
 
                 if ($this->enable_ssl && $this->ssl_mode === 'verify-ca') {
-                    $url .= '?cacert=/etc/ssl/certs/coolify-ca.crt';
+                    $url .= '?cacert=/etc/ssl/certs/bedrock-ca.crt';
                 }
 
                 return $url;
@@ -308,7 +308,7 @@ class StandaloneKeydb extends BaseModel
                     $url = "{$scheme}://:{$encodedPass}@{$serverIp}:{$this->public_port}/0";
 
                     if ($this->enable_ssl && $this->ssl_mode === 'verify-ca') {
-                        $url .= '?cacert=/etc/ssl/certs/coolify-ca.crt';
+                        $url .= '?cacert=/etc/ssl/certs/bedrock-ca.crt';
                     }
 
                     return $url;

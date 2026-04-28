@@ -16,19 +16,19 @@
     <meta name="robots" content="noindex">
     <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="Description" content="Coolify: An open-source & self-hostable Heroku / Netlify / Vercel alternative" />
+    <meta name="Description" content="Bedrock: An open-source & self-hostable Heroku / Netlify / Vercel alternative" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@coolifyio" />
-    <meta name="twitter:title" content="Coolify" />
+    <meta name="twitter:site" content="@bedrockio" />
+    <meta name="twitter:title" content="Bedrock" />
     <meta name="twitter:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
-    <meta name="twitter:image" content="https://cdn.coollabs.io/assets/coolify/og-image.png" />
+    <meta name="twitter:image" content="https://cdn.bedrock.cloud/assets/bedrock/og-image.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://coolify.io" />
-    <meta property="og:title" content="Coolify" />
+    <meta property="og:url" content="https://bedrock.io" />
+    <meta property="og:title" content="Bedrock" />
     <meta property="og:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
-    <meta property="og:site_name" content="Coolify" />
-    <meta property="og:image" content="https://cdn.coollabs.io/assets/coolify/og-image.png" />
+    <meta property="og:site_name" content="Bedrock" />
+    <meta property="og:image" content="https://cdn.bedrock.cloud/assets/bedrock/og-image.png" />
     @use('App\Models\InstanceSettings')
     @php
 
@@ -43,11 +43,11 @@
             }
         }
     @endphp
-    <title>{{ $name }}{{ $title ?? 'Coolify' }}</title>
+    <title>{{ $name }}{{ $title ?? 'Bedrock' }}</title>
     @env('local')
-        <link rel="icon" href="{{ asset('coolify-logo-dev-transparent.png') }}" type="image/png" />
+        <link rel="icon" href="{{ asset('bedrock-logo-dev-transparent.png') }}" type="image/png" />
     @else
-        <link rel="icon" href="{{ asset('coolify-logo.svg') }}" type="image/svg+xml" />
+        <link rel="icon" href="{{ asset('bedrock-logo.svg') }}" type="image/svg+xml" />
     @endenv
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/js/app.js', 'resources/css/app.css'])
@@ -62,8 +62,8 @@
             display: none !important;
         }
     </style>
-    @if (config('app.name') == 'Coolify Cloud')
-        <script defer data-domain="app.coolify.io" src="https://analytics.coollabs.io/js/plausible.js"></script>
+    @if (config('app.name') == 'Bedrock Cloud')
+        <script defer data-domain="app.bedrock.io" src="https://analytics.bedrock.cloud/js/plausible.js"></script>
         <script src="https://js.sentry-cdn.com/0f8593910512b5cdd48c6da78d4093be.min.js" crossorigin="anonymous"></script>
     @endif
     @auth
@@ -175,7 +175,7 @@
             window.Echo = new Echo({
                 broadcaster: 'pusher',
                 cluster: "{{ config('constants.pusher.host') }}" || window.location.hostname,
-                key: "{{ config('constants.pusher.app_key') }}" || 'coolify',
+                key: "{{ config('constants.pusher.app_key') }}" || 'bedrock',
                 wsHost: "{{ config('constants.pusher.host') }}" || window.location.hostname,
                 wsPort: "{{ getRealtime() }}",
                 wssPort: "{{ getRealtime() }}",

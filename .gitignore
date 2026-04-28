@@ -40,3 +40,9 @@ CHANGELOG.md
 /.workspaces
 tests/Browser/Screenshots
 tests/v4/Browser/Screenshots
+# Bedrock specific
+bedrock.json
+config/features.json
+.env.local
+backups/
+ssl/

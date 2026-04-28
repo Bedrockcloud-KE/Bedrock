@@ -29,8 +29,8 @@ class StartSentinel
         }
         $endpoint = data_get($server, 'settings.sentinel_custom_url');
         $debug = data_get($server, 'settings.is_sentinel_debug_enabled');
-        $mountDir = '/data/coolify/sentinel';
-        $image = config('constants.coolify.registry_url').'/coollabsio/sentinel:'.$version;
+        $mountDir = '/data/bedrock/sentinel';
+        $image = config('constants.bedrock.registry_url').'/coollabsio/sentinel:'.$version;
         if (! $endpoint) {
             throw new \RuntimeException('You should set FQDN in Instance Settings.');
         }
@@ -44,21 +44,21 @@ class StartSentinel
             'COLLECTOR_RETENTION_PERIOD_DAYS' => $metricsHistory,
         ];
         $labels = [
-            'coolify.managed' => 'true',
+            'bedrock.managed' => 'true',
         ];
         if (isDev()) {
             // data_set($environments, 'DEBUG', 'true');
             if ($customImage && ! empty($customImage)) {
                 $image = $customImage;
             }
-            $mountDir = '/var/lib/docker/volumes/coolify_dev_coolify_data/_data/sentinel';
+            $mountDir = '/var/lib/docker/volumes/bedrock_dev_bedrock_data/_data/sentinel';
         }
         $dockerEnvironments = implode(' ', array_map(fn ($key, $value) => '-e '.escapeshellarg("$key=$value"), array_keys($environments), $environments));
         $dockerLabels = implode(' ', array_map(fn ($key, $value) => "$key=$value", array_keys($labels), $labels));
-        $dockerCommand = "docker run -d $dockerEnvironments --name coolify-sentinel -v /var/run/docker.sock:/var/run/docker.sock -v $mountDir:/app/db --pid host --health-cmd \"curl --fail http://127.0.0.1:8888/api/health || exit 1\" --health-interval 10s --health-retries 3 --add-host=host.docker.internal:host-gateway --label $dockerLabels $image";
+        $dockerCommand = "docker run -d $dockerEnvironments --name bedrock-sentinel -v /var/run/docker.sock:/var/run/docker.sock -v $mountDir:/app/db --pid host --health-cmd \"curl --fail http://127.0.0.1:8888/api/health || exit 1\" --health-interval 10s --health-retries 3 --add-host=host.docker.internal:host-gateway --label $dockerLabels $image";
 
         instant_remote_process([
-            'docker rm -f coolify-sentinel || true',
+            'docker rm -f bedrock-sentinel || true',
             "mkdir -p $mountDir",
             $dockerCommand,
             "chown -R 9999:root $mountDir",

@@ -149,11 +149,11 @@ it('creates Application with all fillable attributes', function () {
         'name' => 'Full Fillable App',
         'description' => 'App with every fillable attr set',
         'fqdn' => 'https://app.example.com',
-        'git_repository' => 'https://github.com/coollabsio/coolify',
+        'git_repository' => 'https://github.com/coollabsio/bedrock',
         'git_branch' => 'main',
         'git_commit_sha' => 'abc123def456',
-        'git_full_url' => 'https://github.com/coollabsio/coolify.git',
-        'docker_registry_image_name' => 'ghcr.io/coollabsio/coolify',
+        'git_full_url' => 'https://github.com/coollabsio/bedrock.git',
+        'docker_registry_image_name' => 'ghcr.io/coollabsio/bedrock',
         'docker_registry_image_tag' => 'latest',
         'build_pack' => 'nixpacks',
         'static_image' => 'nginx:alpine',
@@ -237,7 +237,7 @@ it('creates Application with all fillable attributes', function () {
     expect($application->exists)->toBeTrue();
     expect($application->uuid)->toBe('custom-app-uuid');
     expect($application->name)->toBe('Full Fillable App');
-    expect((string) $application->git_repository)->toBe('https://github.com/coollabsio/coolify');
+    expect((string) $application->git_repository)->toBe('https://github.com/coollabsio/bedrock');
     expect($application->build_pack)->toBe('nixpacks');
     expect($application->ports_exposes)->toBe('3000');
     expect($application->environment_id)->toBe($this->environment->id);
@@ -330,7 +330,7 @@ it('creates ServerSetting with all fillable attributes', function () {
         'is_logdrain_highlight_enabled' => false,
         'logdrain_highlight_project_id' => 'hl-proj-123',
         'is_logdrain_axiom_enabled' => true,
-        'logdrain_axiom_dataset_name' => 'coolify-logs',
+        'logdrain_axiom_dataset_name' => 'bedrock-logs',
         'logdrain_axiom_api_key' => 'axiom-key-456',
         'is_swarm_worker' => false,
         'is_logdrain_custom_enabled' => false,
@@ -855,26 +855,26 @@ it('creates SwarmDocker with all fillable attributes', function () {
     $swarm = SwarmDocker::create([
         'server_id' => $this->server->id,
         'name' => 'swarm-dest',
-        'network' => 'coolify-swarm',
+        'network' => 'bedrock-swarm',
     ]);
 
     expect($swarm->exists)->toBeTrue();
     expect($swarm->server_id)->toBe($this->server->id);
     expect($swarm->name)->toBe('swarm-dest');
-    expect($swarm->network)->toBe('coolify-swarm');
+    expect($swarm->network)->toBe('bedrock-swarm');
 });
 
 it('creates StandaloneDocker with all fillable attributes', function () {
     $docker = StandaloneDocker::create([
         'server_id' => $this->server->id,
         'name' => 'standalone-dest',
-        'network' => 'coolify-standalone',
+        'network' => 'bedrock-standalone',
     ]);
 
     expect($docker->exists)->toBeTrue();
     expect($docker->server_id)->toBe($this->server->id);
     expect($docker->name)->toBe('standalone-dest');
-    expect($docker->network)->toBe('coolify-standalone');
+    expect($docker->network)->toBe('bedrock-standalone');
 });
 
 it('creates ScheduledTask with all fillable attributes', function () {
