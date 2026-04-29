@@ -22,7 +22,7 @@ permissions:
 env:
   GITHUB_REGISTRY: ghcr.io
   DOCKER_REGISTRY: docker.io
-  IMAGE_NAME: "coollabsio/bedrock"
+  IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bedrock"
 
 jobs:
   build-push:
