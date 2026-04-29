@@ -81,6 +81,7 @@ jobs:
             ${{ env.GITHUB_REGISTRY }}/${{ env.GHCR_IMAGE_NAME }}:${{ steps.sanitize.outputs.tag }}-${{ matrix.arch }}
           cache-from: |
             type=gha,scope=build-${{ matrix.arch }}
+            type=registry,ref=${{ env.GITHUB_REGISTRY }}/${{ env.GHCR_IMAGE_NAME }}:buildcache-${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=build-${{ matrix.arch }}
 
   merge-manifest:
