@@ -23,7 +23,6 @@ permissions:
   packages: write
 
 env:
-  GITHUB_REGISTRY: ghcr.io
   DOCKER_REGISTRY: docker.io
   IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bedrock"
 
